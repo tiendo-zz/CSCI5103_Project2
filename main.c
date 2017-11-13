@@ -182,11 +182,11 @@ int main( int argc, char *argv[] )
     focus_program(virtmem,npages*PAGE_SIZE);
   } else {
     fprintf(stderr,"unknown program: %s\n",argv[3]);
-
   }
 
-  printf("page fault count = %d\n", page_fault_counter);
+  // printf("page fault count = %d\n", page_fault_counter);
 
+  printf("%d\n", page_fault_counter);
   page_table_delete(pt);
   disk_close(disk);
 
