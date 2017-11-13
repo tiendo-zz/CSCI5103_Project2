@@ -25,24 +25,24 @@ static void internal_fault_handler( int signum, siginfo_t *info, void *context )
 {
 
 #ifdef i386
-	char *addr = (char*)(((struct ucontext *)context)->uc_mcontext.cr2);
+  char *addr = (char*)(((struct ucontext *)context)->uc_mcontext.cr2);
 #else
-	char *addr = info->si_addr;
+  char *addr = info->si_addr;
 #endif
 
-	struct page_table *pt = the_page_table;
+  struct page_table *pt = the_page_table;
 
-	if(pt) {
-		int page = (addr-pt->virtmem) / PAGE_SIZE;
+  if(pt) {
+    int page = (addr-pt->virtmem) / PAGE_SIZE;
 
-		if(page>=0 && page<pt->npages) {
-			pt->handler(pt,page);
-			return;
-		}
-	}
+    if(page>=0 && page<pt->npages) {
+      pt->handler(pt,page);
+      return;
+    }
+  }
 
-	fprintf(stderr,"segmentation fault at address %p\n",addr);
-	abort();
+  fprintf(stderr,"segmentation fault at address %p\n",addr);
+  abort();
 }
 
 struct page_table * page_table_create( int npages, int nframes, page_fault_handler_t handler )
