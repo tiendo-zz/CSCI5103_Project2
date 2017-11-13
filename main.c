@@ -27,9 +27,12 @@ unsigned int page_fault_counter = 0;
 void page_fault_handler_custom( struct page_table *pt, int page){
   int index = 0;
   int frame_idx = 0;
-  
+    
   // 1. Remove all mapping to the physical frame from virt mem
-  for (index = 0; index < pt->npages; index++){
+  int max_page = page + pt->nframes;
+  if(max_page > pt->npages)
+    max_page = pt->npages;
+  for (index = page; index < max_page; index++){    
     if (pt->page_bits[index] != 0)
     {
       if (pt->page_bits[index] & PROT_WRITE)
@@ -39,7 +42,10 @@ void page_fault_handler_custom( struct page_table *pt, int page){
   }
   
   // 2. Scan through all nframes and map the corr. virt mem starting from page
-  for (frame_idx = 0; frame_idx < pt->nframes; frame_idx++){
+  int max_frame = pt->npages - page;
+  if(max_frame > pt->nframes)
+    max_frame = pt->nframes;
+  for (frame_idx = 0; frame_idx < max_frame; frame_idx++){
     disk_read(disk, page+frame_idx, pt->physmem + frame_idx*PAGE_SIZE);
     page_table_set_entry(pt, page+frame_idx, frame_idx, PROT_READ);
   }  
